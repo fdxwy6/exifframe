@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LIGHTFRAME</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+    :root {
+        --bg: #f5f6f8;
+        --panel: #fff;
+        --text: #111827;
+        --muted: #6b7280
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text)
+    }
+
+    nav.container-fluid {
+        background: rgba(255, 255, 255, .82);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(0, 0, 0, .04)
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap:.8rem
+    }
+
+    .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #111827, #374151);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-weight: 700;
+        letter-spacing: 1px;
+        box-shadow:0 6px 18px rgba(0, 0, 0, .12)
+    }
+
+    .brand-text {
+        display: flex;
+        flex-direction: column;
+        line-height:1.05
+    }
+
+    .brand-text strong {
+        font-size: 1rem;
+        letter-spacing:.08em
+    }
+
+    .brand-text small {
+        color: var(--muted);
+        font-size: .72rem;
+        letter-spacing:.12em
+    }
+
+    .socials {
+        display: flex;
+        gap:.6rem
+    }
+
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, .06);
+        color: #111827;
+        text-decoration: none;
+        transition:all .2s ease
+    }
+
+    .social-btn:hover {
+        transform: translateY(-2px);
+        box-shadow:0 8px 20px rgba(0, 0, 0, .08)
+    }
+
+    main.container {
+        max-width: 1500px;
+        padding-top: 1rem;
+        padding-bottom:4rem
+    }
+
+    .toolbar {
+        background: #fff;
+        border-radius: 20px;
+        padding: 1rem 1.2rem;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, .05);
+        margin-bottom:1.5rem
+    }
+
+    .toolbar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap:.9rem 1.2rem
+    }
+
+    .toolbar-item {
+        display: flex;
+        align-items: center;
+        gap:.55rem
+    }
+
+    .toolbar-item span {
+        white-space: nowrap;
+        font-size:.84rem
+    }
+
+    .toolbar-item input[type=text] {
+        margin: 0;
+        height: 38px;
+        font-size:.84rem
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+        gap:2rem
+    }
+
+    .preview-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 1.2rem;
+        box-shadow:0 8px 30px rgba(0, 0, 0, .05)
+    }
+
+    .canvas-wrap {
+        display: flex;
+        justify-content:center
+    }
+
+    canvas {
+        max-width: 100%;
+        border-radius: 12px;
+        background: #fff;
+        box-shadow:0 12px 30px rgba(0, 0, 0, .12)
+    }
+
+    .filename {
+        text-align: center;
+        color: var(--muted);
+        margin-top: 1rem;
+        font-size: .82rem
+    }
+    </style>
+</head>
+<body>
+    <nav class="container-fluid">
+        <ul>
+            <li>
+                <div class="brand">
+                    <div class="brand-mark">LF</div>
+                    <div class="brand-text">
+                        <strong>LIGHTFRAME</strong>
+                        <small>PHOTO PRESENTATION STUDIO</small>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <ul class="socials">
+            <li>
+                <a class="social-btn" href="https://instagram.com" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </li>
+            <li>
+                <a class="social-btn" href="https://x.com" target="_blank">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+            </li>
+            <li>
+                <a class="social-btn" href="https://www.douyin.com/jingxuan/search/74512974560?aid=9127f92c-935c-4fee-adf9-9141c9b270a6&type=general" target="_blank">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <main class="container">
+        <div class="toolbar">
+            <div class="toolbar-grid">
+                <div class="toolbar-item">
+                    <input type="file" id="imageInput" accept="image/*" multiple>
+                </div>
+                <div class="toolbar-item">
+                    <input type="checkbox" id="enableBorder" checked>
+                    <span>边框 3%</span>
+                </div>
+                <div class="toolbar-item">
+                    <input type="checkbox" id="showBasicExif" checked>
+                    <span>摄影三要素</span>
+                </div>
+                <div class="toolbar-item">
+                    <input type="checkbox" id="showDateTime">
+                    <span>时间/地点</span>
+                </div>
+                <div class="toolbar-item">
+                    <span>水印</span>
+                    <input type="text" id="watermarkText" placeholder="lens.iamwv.com">
+                </div>
+                <div class="toolbar-item">
+                    <span>签名</span>
+                    <input type="text" id="signatureText" placeholder="Shot by Waye">
+                </div>
+                <div class="toolbar-item">
+                    <button id="renderBtn">刷新预览</button>
+                </div>
+                <div class="toolbar-item">
+                    <button class="secondary" id="downloadZipBtn">下载 ZIP</button>
+                </div>
+            </div>
+        </div>
+        <div class="preview-grid" id="previewGrid"></div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script>
+    const imageInput = document.getElementById('imageInput');
+    const previewGrid = document.getElementById('previewGrid');
+    let images = [];
+    imageInput.addEventListener('change', async (e) => {
+        images = [];
+        previewGrid.innerHTML = '';
+        for (const file of [...e.target.files])
+            await processImage(file)
+    });
+    async function processImage(file) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => {
+                EXIF.getData(file, async function() {
+                    const gpsLat = EXIF.getTag(this, 'GPSLatitude');
+                    const gpsLon = EXIF.getTag(this, 'GPSLongitude');
+                    const gpsLatRef = EXIF.getTag(this, 'GPSLatitudeRef');
+                    const gpsLonRef = EXIF.getTag(this, 'GPSLongitudeRef');
+                    const exif = {
+                        iso: EXIF.getTag(this, 'ISOSpeedRatings') || '',
+                        aperture: EXIF.getTag(this, 'FNumber') || '',
+                        shutter: EXIF.getTag(this, 'ExposureTime') || '',
+                        focal: EXIF.getTag(this, 'FocalLengthIn35mmFilm') || EXIF.getTag(this, 'FocalLength') || '',
+                        date: EXIF.getTag(this, 'DateTimeOriginal') || '',
+                        location: ''
+                    };
+                    if (gpsLat && gpsLon) {
+                        const lat = convertGPS(gpsLat, gpsLatRef);
+                        const lon = convertGPS(gpsLon, gpsLonRef);
+                        exif.location = await reverseGeocode(lat, lon)
+                    }
+                    const item = {
+                        file,
+                        img,
+                        exif
+                    };
+                    images.push(item);
+                    createPreview(item);
+                    resolve()
+                })
+            };
+            img.src = URL.createObjectURL(file)
+        })
+    }
+    function convertGPS(coord, ref) {
+        const d = coord[0].numerator / coord[0].denominator;
+        const m = coord[1].numerator / coord[1].denominator;
+        const s = coord[2].numerator / coord[2].denominator;
+        let dec = d + (m / 60) + (s / 3600);
+        if (ref === 'S' || ref === 'W')
+            dec *= -1;
+        return dec
+    }
+    async function reverseGeocode(lat, lon) {
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=zh-CN&lat=${lat}&lon=${lon}`);
+            const data = await res.json();
+            const addr = data.address || {};
+            const city = addr.city || addr.town || addr.state || '';
+            const country = addr.country || '';
+            if (country && city)
+                return `${country} · ${city}`;
+            return city || country || ''
+        } catch {
+            return ''
+        }
+    }
+    function createPreview(item) {
+        const card = document.createElement('div');
+        card.className = 'preview-card';
+        const wrap = document.createElement('div');
+        wrap.className = 'canvas-wrap';
+        const canvas = document.createElement('canvas');
+        wrap.appendChild(canvas);
+        const filename = document.createElement('div');
+        filename.className = 'filename';
+        filename.textContent = item.file.name;
+        card.appendChild(wrap);
+        card.appendChild(filename);
+        previewGrid.appendChild(card);
+        item.canvas = canvas;
+        item.ctx = canvas.getContext('2d');
+        renderCanvas(item)
+    }
+    function formatAperture(v) {
+        if (!v)
+            return '';
+        if (typeof v === 'object' && v.numerator)
+            return 'f/' + (v.numerator / v.denominator).toFixed(1);
+        return 'f/' + v
+    }
+    function formatShutter(v) {
+        if (!v)
+            return '';
+        if (typeof v === 'object') {
+            const value = v.numerator / v.denominator;
+            if (value >= 1)
+                return value.toFixed(1) + 's';
+            return '1/' + Math.round(1 / value) + 's'
+        }
+        return v
+    }
+    function formatFocal(v) {
+        if (!v)
+            return '';
+        if (typeof v === 'object')
+            return Math.round(v.numerator / v.denominator) + 'mm';
+        return v + 'mm'
+    }
+    function renderCanvas(item) {
+        const canvas = item.canvas,
+            ctx = item.ctx,
+            img = item.img,
+            exif = item.exif;
+        const border = document.getElementById('enableBorder').checked ? img.width * 0.03 : 0;
+        const showBasicExif = document.getElementById('showBasicExif').checked;
+        const showDateTime = document.getElementById('showDateTime').checked;
+        const watermark = document.getElementById('watermarkText').value.trim();
+        const signature = document.getElementById('signatureText').value.trim();
+        let lines = 0;
+        if (signature)
+            lines++;
+        if (showBasicExif)
+            lines++;
+        if (showDateTime && (exif.date || exif.location))
+            lines++;
+        const lineHeight = Math.max(34, img.width * 0.018);
+        const exifBlockHeight = lines > 0 ? lines * lineHeight + 60 : 0;
+        canvas.width = img.width + border * 2;
+        canvas.height = img.height + border * 2 + exifBlockHeight;
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, border, border, img.width, img.height);
+        if (watermark) {
+            ctx.font = `${Math.max(18, img.width * 0.022)}px sans-serif`;
+            ctx.fillStyle = 'rgba(255,255,255,0.30)';
+            ctx.textAlign = 'right';
+            ctx.shadowColor = 'rgba(0,0,0,0.35)';
+            ctx.shadowBlur = 8;
+            ctx.fillText(watermark, border + img.width - img.width * 0.03, border + img.height - img.height * 0.03);
+            ctx.shadowBlur = 0
+        }
+        const exifTop = border + img.height;
+        const exifBottom = canvas.height;
+        const centerY = (exifTop + exifBottom) / 2;
+        let y = centerY - ((lines - 1) * lineHeight / 2);
+        ctx.textAlign = 'center';
+        if (signature) {
+            ctx.fillStyle = '#333';
+            ctx.font = `${Math.max(24, img.width * 0.018)}px serif`;
+            ctx.fillText(signature, canvas.width / 2, y);
+            y += lineHeight
+        }
+        if (showBasicExif) {
+            const line = `${formatFocal(exif.focal)} · ${formatAperture(exif.aperture)} · ${formatShutter(exif.shutter)} · ISO${exif.iso}`;
+            ctx.fillStyle = '#111';
+            ctx.font = `${Math.max(18, img.width * 0.014)}px sans-serif`;
+            ctx.fillText(line, canvas.width / 2, y);
+            y += lineHeight
+        }
+        if (showDateTime && (exif.date || exif.location)) {
+            ctx.fillStyle = '#777';
+            ctx.font = `${Math.max(16, img.width * 0.012)}px sans-serif`;
+            const parts = [];
+            if (exif.location)
+                parts.push(exif.location);
+            if (exif.date)
+                parts.push(exif.date.replace(/:/g, '.'));
+            ctx.fillText(parts.join('   ·   '), canvas.width / 2, y)
+        }
+    }
+    function rerenderAll() {
+        images.forEach(renderCanvas)
+    }
+    ['enableBorder', 'showBasicExif', 'showDateTime', 'watermarkText', 'signatureText'].forEach(id => {
+        document.getElementById(id).addEventListener('input', rerenderAll);
+        document.getElementById(id).addEventListener('change', rerenderAll)
+    });
+    document.getElementById('renderBtn').addEventListener('click', rerenderAll);
+    document.getElementById('downloadZipBtn').addEventListener('click', async () => {
+        const zip = new JSZip();
+        for (const item of images) {
+            const data = item.canvas.toDataURL('image/png').split(',')[1];
+            zip.file(item.file.name.replace(/\.[^.]+$/, '') + '-framed.png', data, {
+                base64: true
+            })
+        }
+        const content = await zip.generateAsync({
+            type: 'blob'
+        });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(content);
+        a.download = 'lightframe-export.zip';
+        a.click()
+    });
+    </script>
+</body>
+</html>
