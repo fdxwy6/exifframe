@@ -217,7 +217,8 @@
                     <button id="renderBtn">刷新预览</button>
                 </div>
                 <div class="toolbar-item">
-                    <button class="secondary" id="downloadZipBtn">下载 ZIP</button>
+                    <button class="secondary" id="downloadZipBtn">无压缩下载</button>
+                    <button class="contrast" id="compressBtn">压缩图片下载</button>
                 </div>
             </div>
         </div>
@@ -405,6 +406,47 @@
         document.getElementById(id).addEventListener('change', rerenderAll)
     });
     document.getElementById('renderBtn').addEventListener('click', rerenderAll);
+    document.getElementById('compressBtn').addEventListener('click', async () => {
+
+        if (!images.length) return;
+
+        const zip = new JSZip();
+
+        for (const item of images) {
+
+            const originalCanvas = item.canvas;
+
+            // 4MB版本
+            const blob4m = await compressCanvas(originalCanvas, 4 * 1024 * 1024);
+
+            // 400KB版本
+            const blob400k = await compressCanvas(originalCanvas, 400 * 1024);
+
+            const baseName = item.file.name.replace(/\.[^.]+$/, '');
+
+            zip.file(
+                `${baseName}-4M.jpg`,
+                blob4m
+            );
+
+            zip.file(
+                `${baseName}-400K.jpg`,
+                blob400k
+            );
+        }
+
+        const content = await zip.generateAsync({
+            type: 'blob'
+        });
+
+        const a = document.createElement('a');
+
+        a.href = URL.createObjectURL(content);
+
+        a.download = 'lightframe-compressed.zip';
+
+        a.click();
+    });
     document.getElementById('downloadZipBtn').addEventListener('click', async () => {
         const zip = new JSZip();
         for (const item of images) {
@@ -421,6 +463,33 @@
         a.download = 'lightframe-export.zip';
         a.click()
     });
+    async function compressCanvas(canvas, maxBytes) {
+
+        let quality = 0.92;
+
+        let blob = await canvasToBlob(canvas, quality);
+
+        while (blob.size > maxBytes && quality > 0.1) {
+
+            quality -= 0.05;
+
+            blob = await canvasToBlob(canvas, quality);
+        }
+
+        return blob;
+    }
+
+    function canvasToBlob(canvas, quality) {
+
+        return new Promise(resolve => {
+
+            canvas.toBlob(
+                blob => resolve(blob),
+                'image/jpeg',
+                quality
+            );
+        });
+    }
     </script>
 </body>
 </html>
