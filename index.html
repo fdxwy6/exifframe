@@ -206,12 +206,29 @@
                     <span>时间/地点</span>
                 </div>
                 <div class="toolbar-item">
+                    <input type="checkbox" id="enableWatermark">
                     <span>水印</span>
-                    <input type="text" id="watermarkText" placeholder="lens.iamwv.com">
                 </div>
+
                 <div class="toolbar-item">
+                    <input type="checkbox" id="enableSignature">
                     <span>签名</span>
-                    <input type="text" id="signatureText" placeholder="Shot by Waye">
+                </div>
+
+                <div class="toolbar-item">
+                    <input
+                        type="text"
+                        id="watermarkText"
+                        placeholder="lens.iamwv.com"
+                        value="lens.iamwv.com">
+                </div>
+
+                <div class="toolbar-item">
+                    <input
+                        type="text"
+                        id="signatureText"
+                        placeholder="Shot by Waye"
+                        value="Shot by Waye">
                 </div>
                 <div class="toolbar-item">
                     <button id="renderBtn">刷新预览</button>
@@ -249,7 +266,7 @@
                         iso: EXIF.getTag(this, 'ISOSpeedRatings') || '',
                         aperture: EXIF.getTag(this, 'FNumber') || '',
                         shutter: EXIF.getTag(this, 'ExposureTime') || '',
-                        focal: EXIF.getTag(this, 'FocalLengthIn35mmFilm') || EXIF.getTag(this, 'FocalLength') || '',
+                        focal:EXIF.getTag(this, 'FocalLength') || '',
                         date: EXIF.getTag(this, 'DateTimeOriginal') || '',
                         location: ''
                     };
@@ -344,8 +361,13 @@
         const border = document.getElementById('enableBorder').checked ? img.width * 0.03 : 0;
         const showBasicExif = document.getElementById('showBasicExif').checked;
         const showDateTime = document.getElementById('showDateTime').checked;
-        const watermark = document.getElementById('watermarkText').value.trim();
-        const signature = document.getElementById('signatureText').value.trim();
+        const watermark = document.getElementById('enableWatermark').checked
+            ? document.getElementById('watermarkText').value.trim()
+            : '';
+
+        const signature = document.getElementById('enableSignature').checked
+            ? document.getElementById('signatureText').value.trim()
+            : '';
         let lines = 0;
         if (signature)
             lines++;
@@ -401,7 +423,7 @@
     function rerenderAll() {
         images.forEach(renderCanvas)
     }
-    ['enableBorder', 'showBasicExif', 'showDateTime', 'watermarkText', 'signatureText'].forEach(id => {
+    ['enableBorder', 'showBasicExif', 'showDateTime', 'watermarkText', 'signatureText','enableWatermark','enableSignature',].forEach(id => {
         document.getElementById(id).addEventListener('input', rerenderAll);
         document.getElementById(id).addEventListener('change', rerenderAll)
     });
