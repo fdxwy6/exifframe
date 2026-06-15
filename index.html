@@ -6,6 +6,9 @@
     <title>LIGHTFRAME</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
+
     <style>
     :root {
         --bg: #f5f6f8;
@@ -43,6 +46,14 @@
         font-weight: 700;
         letter-spacing: 1px;
         box-shadow:0 6px 18px rgba(0, 0, 0, .12)
+    }
+
+    /* 焦距模式下拉框修复 */
+    #focalMode {
+        appearance: auto !important;
+        color: #111827 !important;
+        background-color: #fff !important;
+        -webkit-text-fill-color: #111827 !important;
     }
 
     .brand-text {
@@ -190,8 +201,17 @@
     <main class="container">
         <div class="toolbar">
             <div class="toolbar-grid">
+                
                 <div class="toolbar-item">
                     <input type="file" id="imageInput" accept="image/*" multiple>
+                </div>
+                <div class="toolbar-item">
+                    <span>焦距模式</span>
+                    <select id="focalMode" style="margin:0;height:38px;">
+                        <option value="smart" selected>智能判断</option>
+                        <option value="physical">物理焦距</option>
+                        <option value="equivalent">等效焦距</option>
+                    </select>
                 </div>
                 <div class="toolbar-item">
                     <input type="checkbox" id="enableBorder" checked>
@@ -266,7 +286,10 @@
                         iso: EXIF.getTag(this, 'ISOSpeedRatings') || '',
                         aperture: EXIF.getTag(this, 'FNumber') || '',
                         shutter: EXIF.getTag(this, 'ExposureTime') || '',
-                        focal:EXIF.getTag(this, 'FocalLength') || '',
+
+                        focal: EXIF.getTag(this, 'FocalLength') || '',
+                        focal35: EXIF.getTag(this, 'FocalLengthIn35mmFilm') || '',
+
                         date: EXIF.getTag(this, 'DateTimeOriginal') || '',
                         location: ''
                     };
@@ -346,12 +369,69 @@
         }
         return v
     }
-    function formatFocal(v) {
-        if (!v)
-            return '';
-        if (typeof v === 'object')
-            return Math.round(v.numerator / v.denominator) + 'mm';
-        return v + 'mm'
+    function formatFocal(exif) {
+
+        const mode =
+            document.getElementById('focalMode')?.value || 'smart';
+
+        let physical = 0;
+
+        if (exif.focal) {
+
+            if (typeof exif.focal === 'object') {
+
+                physical =
+                    exif.focal.numerator /
+                    exif.focal.denominator;
+
+            } else {
+
+                physical = parseFloat(exif.focal);
+            }
+        }
+
+        const equivalent =
+            parseFloat(exif.focal35) || 0;
+
+        // 物理焦距
+        if (mode === 'physical') {
+
+            if (!physical) return '';
+
+            return `${Math.round(physical)}mm`;
+        }
+
+        // 等效焦距
+        if (mode === 'equivalent') {
+
+            if (!equivalent) {
+
+                return physical
+                    ? `${Math.round(physical)}mm`
+                    : '';
+            }
+
+            return `${Math.round(equivalent)}mm`;
+        }
+
+        // 智能模式
+        if (
+            physical > 0 &&
+            physical < 10 &&
+            equivalent > 0
+        ) {
+
+            return `${Math.round(equivalent)}mm`;
+        }
+
+        if (physical > 0) {
+
+            return `${Math.round(physical)}mm`;
+        }
+
+        return equivalent
+            ? `${Math.round(equivalent)}mm`
+            : '';
     }
     function renderCanvas(item) {
         const canvas = item.canvas,
@@ -403,7 +483,12 @@
             y += lineHeight
         }
         if (showBasicExif) {
-            const line = `${formatFocal(exif.focal)} · ${formatAperture(exif.aperture)} · ${formatShutter(exif.shutter)} · ISO${exif.iso}`;
+            const line =
+            `${formatFocal(exif)} ·
+            ${formatAperture(exif.aperture)} ·
+            ${formatShutter(exif.shutter)} ·
+            ISO${exif.iso}`;
+
             ctx.fillStyle = '#111';
             ctx.font = `${Math.max(18, img.width * 0.014)}px sans-serif`;
             ctx.fillText(line, canvas.width / 2, y);
@@ -423,7 +508,7 @@
     function rerenderAll() {
         images.forEach(renderCanvas)
     }
-    ['enableBorder', 'showBasicExif', 'showDateTime', 'watermarkText', 'signatureText','enableWatermark','enableSignature',].forEach(id => {
+    ['enableBorder', 'showBasicExif', 'showDateTime', 'watermarkText', 'signatureText','enableWatermark','enableSignature','focalMode',].forEach(id => {
         document.getElementById(id).addEventListener('input', rerenderAll);
         document.getElementById(id).addEventListener('change', rerenderAll)
     });
