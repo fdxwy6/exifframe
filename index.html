@@ -22,11 +22,6 @@
         color: var(--text)
     }
 
-    nav.container-fluid {
-        background: rgba(255, 255, 255, .82);
-        backdrop-filter: blur(16px);
-        border-bottom: 1px solid rgba(0, 0, 0, .04)
-    }
 
     .brand {
         display: flex;
@@ -73,24 +68,7 @@
         letter-spacing:.12em
     }
 
-    .socials {
-        display: flex;
-        gap:.6rem
-    }
 
-    .social-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #fff;
-        border: 1px solid rgba(0, 0, 0, .06);
-        color: #111827;
-        text-decoration: none;
-        transition:all .2s ease
-    }
 
     .social-btn:hover {
         transform: translateY(-2px);
@@ -165,39 +143,118 @@
         margin-top: 1rem;
         font-size: .82rem
     }
+
+        /* ==========================================
+       全新的 HEADER 顶部栏样式（彻底治愈挤压）
+       ========================================== */
+    .custom-gallery-header {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 16px 24px !important;
+        background: rgba(255, 255, 255, .82) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, .04) !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 按钮的外层包裹容器 */
+    .socials {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 12px !important;       /* 图标之间的标准间距 */
+        flex-shrink: 0 !important;  /* 誓死捍卫总宽度，坚决不缩水 */
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* 4 个白底正方形图标按钮 */
+    .social-btn {
+        width: 40px !important;     /* 锁死横向 40 像素 */
+        height: 40px !important;    /* 锁死纵向 40 像素 */
+        min-width: 40px !important; /* 双重保险，防止任何力量挤压 */
+        border-radius: 12px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: #fff !important;
+        border: 1px solid rgba(0, 0, 0, .06) !important;
+        color: #111827 !important;
+        text-decoration: none !important;
+        transition: all .2s ease !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 悬浮交互 */
+    .social-btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .08) !important;
+        background: #fafafa !important;
+    }
+
+    /* ==========================================
+       移动端自适应防御（保证在手机上也不重叠换行）
+       ========================================== */
+    @media (max-width: 768px) {
+        .custom-gallery-header {
+            padding: 12px 16px !important;
+        }
+        .brand-text strong {
+            font-size: 0.9rem !important;
+        }
+        .brand-text small {
+            font-size: 0.65rem !important;
+        }
+        .socials {
+            gap: 8px !important; /* 手机端间距稍微紧凑 */
+        }
+        .social-btn {
+            width: 36px !important;  /* 手机端按钮小一号 */
+            height: 36px !important;
+            min-width: 36px !important;
+            border-radius: 10px !important;
+        }
+    }
+
+    
+    
     </style>
 </head>
 <body>
-    <nav class="container-fluid">
-        <ul>
-            <li>
-                <div class="brand">
-                    <div class="brand-mark">LF</div>
-                    <div class="brand-text">
-                        <strong>LIGHTFRAME</strong>
-                        <small>PHOTO PRESENTATION STUDIO</small>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        <ul class="socials">
-            <li>
-                <a class="social-btn" href="https://instagram.com" target="_blank">
-                    <i class="fab fa-instagram"></i>
-                </a>
-            </li>
-            <li>
-                <a class="social-btn" href="https://x.com" target="_blank">
-                    <i class="fab fa-x-twitter"></i>
-                </a>
-            </li>
-            <li>
-                <a class="social-btn" href="https://www.douyin.com/jingxuan/search/74512974560?aid=9127f92c-935c-4fee-adf9-9141c9b270a6&type=general" target="_blank">
-                    <i class="fab fa-tiktok"></i>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <header class="custom-gallery-header">
+        <div class="brand">
+            <div class="brand-mark">F</div>
+            <div class="brand-text">
+                <strong>FRAME THE VIEW</strong>
+                <small>LIFE OF LIGHT & SHADOW</small>
+            </div>
+        </div>
+        
+        <div class="socials">
+          <a class="social-btn" href="https://yes.iamwv.com" target="_blank" title="My Blog">
+            <i class="fa-solid fa-earth-americas"></i>
+          </a>
+
+          <a class="social-btn" href="https://x.com" target="_blank" title="X (Twitter)">
+            <i class="fab fa-x-twitter"></i>
+          </a>
+
+          <a class="social-btn" href="https://www.douyin.com/jingxuan/search/74512974560?aid=9127f92c-935c-4fee-adf9-9141c9b270a6&type=general" target="_blank" title="TikTok">
+            <i class="fab fa-tiktok"></i>
+          </a>
+
+          <a class="social-btn" href="mailto:hello@iamwv.com" title="Contact Me">
+            <i class="fa-solid fa-envelope"></i>
+          </a>
+        </div>
+
+    </header>
     <main class="container">
         <div class="toolbar">
             <div class="toolbar-grid">
