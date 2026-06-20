@@ -588,13 +588,15 @@
 
             const baseName = item.file.name.replace(/\.[^.]+$/, '');
 
+            // 保持原文件名
             zip.file(
-                `${baseName}-4M.jpg`,
+                `original/${item.file.name}`,
                 blob4m
             );
 
+            // 保持原文件名
             zip.file(
-                `${baseName}-400K.jpg`,
+                `preview/${item.file.name}`,
                 blob400k
             );
         }
